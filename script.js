@@ -2,14 +2,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputBox = document.getElementById('input-box');
     const listContainer = document.getElementById('list-container');
 
-    // Fetch todos from JSONPlaceholder
-    fetch('https://jsonplaceholder.typicode.com/todos')
-        .then(response => response.json())
-        .then(data => {
-            data.forEach(todo => {
-                addTaskToDOM(todo.title, todo.completed);
-            });
-        });
+    async function fetchTodos() {
+        const resp = await fetch('https://jsonplaceholder.typicode.com/todos');
+        const data = await resp.json();        
+        data.forEach(todo => {
+            addTaskToDOM(todo.title,todo.completed)
+        });           
+    }
 
     // Add new task
     window.addTask = function () {
@@ -54,6 +53,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show tasks from local storage
     function showTask() {
         listContainer.innerHTML = localStorage.getItem("data");
+    }
+
+    window.resetList = function() {
+        fetchTodos();
+        saveData(); // Optionally save the state if needed
+    }
+
+    window.removeAllTasks = function() {
+        listContainer.innerHTML = ''; // Clear the list
+        localStorage.removeItem('data'); // Clear local storage
+    }
+
+    window.removeDone = function(){
+        const done = document.getElementsByClassName('checked');
+        while (done.length > 0) {
+            done[0].remove(); // Remove the first element in the list
+        }
+        saveData();
     }
 
     showTask();
